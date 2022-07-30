@@ -36,6 +36,8 @@ func main() {
 		log.Fatal(err)
 	}
 
+	client.Emit("user:join", "2022")
+
 	<-interrupt
 
 	client.Close()
