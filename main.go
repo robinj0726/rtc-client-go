@@ -1,44 +1,25 @@
 package main
 
 import (
-	"crypto/tls"
-	"log"
 	"os"
 	"os/signal"
 	"syscall"
 
-	socketio "github.com/mtfelian/golang-socketio"
-	"github.com/mtfelian/golang-socketio/transport"
+	"github.com/robinj730/rtc-client-go/client"
 )
-
-func onConnectionHandler(c *socketio.Channel)    { log.Printf("Connected %s\n", c.Id()) }
-func onDisconnectionHandler(c *socketio.Channel) { log.Printf("Disconnected %s\n", c.Id()) }
 
 func main() {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, syscall.SIGINT, syscall.SIGTERM)
 
-	tr := transport.DefaultWebsocketTransport()
-	tr.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-
-	client, err := socketio.Dial(
-		socketio.AddrWebsocket("localhost", 4000, true),
-		tr,
-	)
+	client, err := client.NewClient("localhost", 4000, true)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
+	defer client.Release()
 
-	if err := client.On(socketio.OnConnection, onConnectionHandler); err != nil {
-		log.Fatal(err)
-	}
-	if err := client.On(socketio.OnDisconnection, onDisconnectionHandler); err != nil {
-		log.Fatal(err)
-	}
-
-	client.Emit("user:join", "2022")
+	client.JoinRoom("2022")
 
 	<-interrupt
 
-	client.Close()
 }
