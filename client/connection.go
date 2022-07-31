@@ -2,10 +2,11 @@ package client
 
 import (
 	"crypto/tls"
+	"fmt"
 	"log"
 
-	socketio "github.com/mtfelian/golang-socketio"
-	"github.com/mtfelian/golang-socketio/transport"
+	socketio "github.com/robinj730/rtc-client-go/gosocketio"
+	"github.com/robinj730/rtc-client-go/gosocketio/transport"
 )
 
 type Connection struct {
@@ -46,5 +47,8 @@ func (c *Connection) Release() {
 }
 
 func (c *Connection) JoinRoom(roomId string) {
+	c.conn.On("user:joined", func(c *socketio.Channel, data string) {
+		fmt.Printf("#%v\n", data)
+	})
 	c.conn.Emit("user:join", roomId)
 }
