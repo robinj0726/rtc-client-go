@@ -10,21 +10,15 @@ import (
 	"github.com/robinj730/rtc-client-go/client"
 )
 
-type Config struct {
-	RemoteAddr string `json:"server"`
-	RemotePort int    `json:"port"`
-	Secure     bool   `json:"secure"`
-}
-
 func main() {
 	file, err := ioutil.ReadFile("config.json")
 	if err != nil {
 		panic(err)
 	}
 
-	c := Config{}
+	config := client.Configuration{}
 
-	err = json.Unmarshal(file, &c)
+	err = json.Unmarshal(file, &config)
 	if err != nil {
 		panic(err)
 	}
@@ -32,7 +26,7 @@ func main() {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, syscall.SIGINT, syscall.SIGTERM)
 
-	client, err := client.NewClient(c.RemoteAddr, c.RemotePort, c.Secure)
+	client, err := client.NewClient(config)
 	if err != nil {
 		panic(err)
 	}
