@@ -48,7 +48,8 @@ func (c *Connection) Release() {
 
 func (c *Connection) JoinRoom(roomId string) {
 	c.conn.On("user:joined", func(c *socketio.Channel, data string) {
-		fmt.Printf("#%v\n", data)
+		fmt.Println(c.Id())
+		fmt.Println(data)
 	})
 	c.conn.Emit("user:join", roomId)
 }
